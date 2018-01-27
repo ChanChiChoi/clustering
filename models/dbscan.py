@@ -19,11 +19,11 @@ def _euclidean(p,q):
 def _isNeighborhood(q, p, eps, metricFn):
     return metricFn(p,q) < eps    
 
-
-def _region_query(curSampleInd,XMat, eps,metricFn):
-
-    nSamples = XMat.shape[0]
+#TODO:the function should use KNN algorithm
+def _region_query(curSampleInd, XMat, eps, metricFn):
     isNeighborhood = partial(_isNeighborhood, p=XMat[curSampleInd,:], eps=eps, metricFn=metricFn)
+    nSamples = XMat.shape[0]
+    
     seeds = list(filter(lambda ind:isNeighborhood(XMat[ind,:]), range(nSamples)))
     return seeds
 
@@ -50,6 +50,7 @@ def _curSample_expand(XMat, labels, metricFn,
         for seed in seeds:
             labels[seed] = curLabel
 
+        #TODO: the queue should be handled parallel
         #1 - maintain one queue of current sample's propagating region 
         while seeds:
             curSeed = seeds[0]
