@@ -32,30 +32,37 @@ def _curSample_expand(XMat, labels, metricFn,
                     curSampleInd, curLabel,
                     eps, minSamples):
     ''' 
-    if one point is classifitied by one cluster, and the point is an noise point,
+    if one point is classifitied by one cluster, and the point is a noise point,
     although the point will be classifitied twice by two different cluster, 
     but others point connetced by the noise point should not be effect, because they
     could not be propagated.
     '''    
     region_query = partial(_region_query, XMat=XMat, eps=eps, metricFn=metricFn)
+    
+    #get the current sample's neighborhood region
     seeds = region_query(curSampleInd)
+    
     if len(seeds) < minSamples:
-        labels[curSampleInd] = -1
+        labels[curSampleInd] = -1#NOISE point
         return False
     else:
         labels[curSampleInd] = curLabel
         for seed in seeds:
             labels[seed] = curLabel
 
+        #1 - maintain one queue of current sample's propagating region 
         while seeds:
             curSeed = seeds[0]
             curSeedNeigh = region_query(curSeed)
+            
             if len(curSeedNeigh) > minSamples:
                 for seedNeighInd in range(len(curSeedNeigh)):
-                    if labels[seedNeighInd] == -1 or not labels[seedNeighInd]:
-                        if not labels[seedNeighInd]:
-                            seeds.append(seedNeighInd)
-                        labels[seedNeighInd] = curLabel 
+                    if labels[seedNeighInd] == -1:#NOISE
+                        labels[seedNeighInd] = curLabel                      
+                    if not labels[seedNeighInd]:#UNCLASSIFIED
+                        seeds.append(seedNeighInd)
+                        labels[seedNeighInd] = curLabel
+                                             
             seeds = seeds[1:]
         return True
 
@@ -102,7 +109,7 @@ class DBSCAN(object):
             
         Outputs:
         labels: -1 means NOISE;
-                None means UNNCLASSIFIED
+                None means UNCLASSIFIED
         """
         nSamples = XMat.shape[0]
         labels = [None]*nSamples
