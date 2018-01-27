@@ -80,10 +80,7 @@ class DBSCAN(object):
             the options allowed by metrics.pairwise.calculate_distance for its
             metric parameter.
      
-        algorithm : {'auto', 'ball_tree', 'kd_tree', 'brute'}, optional
-            The algorithm to be used by the NearestNeighbors module
-            to compute pointwise distances and find nearest neighbors.
-            See NearestNeighbors module documentation for details.
+        algorithm : not implementated now
 
         nJobs : int, optional (default = 1)
             The number of parallel jobs to run.
@@ -101,10 +98,7 @@ class DBSCAN(object):
 
         Parameters
         ----------
-        XMat : array or sparse (CSR) matrix of shape (n_samples, n_features), or \
-                array of shape (n_samples, n_samples)
-            A feature array, or array of distances between samples if
-            ``metric='precomputed'``.
+        XMat : a matrix of data, row means sample space, col means feature space
             
         Outputs:
         labels: -1 means NOISE;
