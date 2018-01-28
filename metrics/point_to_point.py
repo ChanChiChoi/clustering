@@ -26,9 +26,14 @@ def weighted_lp_DM_vec(x,y,weights=None,p=1):
 def lp_DM_mat(X,Y,p=1):
 
     '''
+    lp_DM_mat(X,Y,1) is equal :
+    >>> from sklearn.metrics.pairwise import manhattan_distances
+    >>> manhattan_distances(X,Y,sum_over_features=True))
+
     outputs:
     distanceP: n_sample_X by n_sample_Y matrix
 
+    example:
     >>> X = np.ones([1,2])
     >>> Y = 2*np.ones([2,2])
     >>> lp_DM_mat(X,Y)
