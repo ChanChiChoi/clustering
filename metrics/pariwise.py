@@ -56,4 +56,8 @@ def cosine_distances(X, Y=None):
     pass
 if __name__ == '__main__':
 
+    X = np.random.randn(2,2)
+    distances = euclidean_distances(X,X)
+    print(distances)
+
     
