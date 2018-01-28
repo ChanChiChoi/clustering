@@ -7,6 +7,11 @@ from .utils import check_pairwise_arrays
 
 @numba.jit()
 def weighted_lp_DM_vec(x,y,weights=None,p=1):
+    '''
+    parameters:
+    x - a vector
+    y - a vector
+    '''
 
     assert p>0, 'p must bigger than 0'
     x,y = check_pairwise_arrays(x,y)
