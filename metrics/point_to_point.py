@@ -19,12 +19,30 @@ def weighted_lp_DM_vec(x,y,weights=None,p=1):
     absVec = np.power(np.abs(x-y),p)
     wAbsVec = weights*absVec
     sumWAbsVec = wAbsVec.sum()
-    distanceP = np.power(sumWAbsVec,1.0/p)
+    distanceWP = np.power(sumWAbsVec,1.0/p)
+    return distanceWP
+
+
+def lp_DM_mat(X,Y,p=1):
+
+    '''
+    outputs:
+    distanceP: n_sample_X by n_sample_Y matrix
+
+    >>> X = np.ones([1,2])
+    >>> Y = 2*np.ones([2,2])
+    >>> lp_DM_mat(X,Y)
+    [[2,2]]
+    '''
+    assert p>0, 'p must bigger than 0'
+    X,Y = check_pairwise_arrays(X,Y)
+    
+    D = X[:, np.newaxis, :] - Y[np.newaxis, :, :]
+    absMat = np.power(np.abs(D),p)
+    sumAbsMat = absMat.sum(2)
+    distanceP = np.power(sumAbsMat,1.0/p)
+
     return distanceP
-
-
-def weighted_lp_DM_mat(X,Y):
-    pass
 
 if __name__ == '__main__':
     pass
