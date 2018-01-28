@@ -4,6 +4,7 @@ import numpy as np
 from functools import partial
 from scipy.sparse import issparse
 import numba 
+#import pp #parallel python
 
 # Utility Functions
 # the function borrow from 
@@ -59,7 +60,7 @@ def euclidean_distances(X,Y):
 
     >>> timeit euclidean_distances(X,X)
     10 loops, best of 3: 182 ms per loop
-    
+
     >>> from sklearn.metrics.pairwise import euclidean_distances as ed
     >>> timeit ed(X,X)
     10 loops, best of 3: 161 ms per loop
@@ -82,6 +83,11 @@ def euclidean_distances(X,Y):
 
     return distances
 
+
+def manhattan_distances():
+    pass
+def cosine_distances(X, Y=None):
+    pass
 if __name__ == '__main__':
 
     
