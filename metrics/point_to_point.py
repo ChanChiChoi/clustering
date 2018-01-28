@@ -54,5 +54,25 @@ def lp_DM_mat(X,Y,p=1):
 
     return distanceP
 
+def dG_DM_vec(x,y,maxVec,minVec):
+    '''
+    parameters:
+    x - a vector
+    y - a vector
+    maxVec - a vector
+    minVec - a vector
+    '''
+    x,y = check_pairwise_arrays(x,y)
+    maxVec,minVec = check_pairwise_arrays(maxVec,minVec)
+    l = x.shape[-1]
+    absVec = np.abs(x-y)
+    diffVec = maxVec - minVec
+    tmp1 = 1 - np.sum(absVec/diffVec)/l
+    ans = -np.log10(tmp1)
+
+    return ans
+
+
+
 if __name__ == '__main__':
     pass
