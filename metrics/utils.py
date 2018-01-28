@@ -35,8 +35,8 @@ def check_pairwise_arrays(X,Y):
     X, Y, dtype_float = _return_float_dtype(X, Y)
     x_shape = X.shape
     y_shape = Y.shape   
-    assert x_shape == y_shape, 'X shape not equal Y shape'
     if X.ndim == 1: X = X.reshape(1,-1)
     if Y.ndim == 1: Y = Y.reshape(1,-1)
+    assert x_shape[-1] == y_shape[-1], 'X feature dimension not equal Y feature dimension'
     
     return X,Y 
