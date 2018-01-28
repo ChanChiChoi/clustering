@@ -32,19 +32,13 @@ def euclidean_distances(X,Y):
     10 loops, best of 3: 161 ms per loop
     """ 
     X,Y = check_pairwise_arrays(X,Y)
-
-    X_square = X*X
-    XX = X_square.sum(1).reshape(-1,1)
-
-    Y_square = Y*Y
-    YY = Y_square.sum(1).reshape(1,-1)
-
-    XY_dot = np.dot(X,Y.T)
-
-    distances = XX -2*XY_dot+YY
-
+    XSquare = X*X
+    XX = XSquare.sum(1).reshape(-1,1)
+    YSquare = Y*Y
+    YY = YSquare.sum(1).reshape(1,-1)
+    XYDot = np.dot(X,Y.T)
+    distances = XX -2*XYDot+YY
     np.maximum(distances, 0, out=distances)
-
     distances = np.sqrt(distances)
 
     return distances
