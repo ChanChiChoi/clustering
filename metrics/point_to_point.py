@@ -72,6 +72,15 @@ def dG_DM_vec(x,y,maxVec,minVec):
 
     return ans
 
+def dQ_DM_vec(x,y):
+    x,y = check_pairwise_arrays(x,y)
+    l = x.shape[-1]
+    diffVec = x-y
+    sumVec = x+y
+    tmp1 = np.power(diffVec/sumVec,2).sum()/l
+    ans = np.sqrt(tmp1)
+
+    return ans
 
 
 if __name__ == '__main__':
