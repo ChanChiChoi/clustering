@@ -48,6 +48,21 @@ def euclidean_distances(X,Y):
     For efficiency reasons, the euclidean distance between a pair of row
     vector x and y is computed as::
         dist(x, y) = sqrt(dot(x, x) - 2 * dot(x, y) + dot(y, y))
+
+
+    performance:
+    >>> X = np.random.randn(1000,1000)
+
+    >>> from scipy.spatial.distance as cdist
+    >>> timeit cdist(X,X,'euclidean')
+    1 loop, best of 3: 1.08s per loop
+
+    >>> timeit euclidean_distances(X,X)
+    10 loops, best of 3: 182 ms per loop
+    
+    >>> from sklearn.metrics.pairwise import euclidean_distances as ed
+    >>> timeit ed(X,X)
+    10 loops, best of 3: 161 ms per loop
     """ 
     X,Y = _check_pairwise_arrays(X,Y)
 
@@ -69,3 +84,4 @@ def euclidean_distances(X,Y):
 
 if __name__ == '__main__':
 
+    
