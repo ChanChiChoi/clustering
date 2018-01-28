@@ -16,7 +16,7 @@ def weighted_lp_DM_vec(x,y,weights=None,p=1):
     else:
         x,weights = check_pairwise_arrays(x,weights)
 
-    absVec = np.power(x-y,p)
+    absVec = np.power(np.abs(x-y),p)
     wAbsVec = weights*absVec
     sumWAbsVec = wAbsVec.sum()
     distanceP = np.power(sumWAbsVec,1.0/p)
