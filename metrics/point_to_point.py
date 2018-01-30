@@ -153,24 +153,6 @@ def unknow_vec(x,y):
     return ans
 
 #=========belows are Discrete-Valued Vectors
-@numba.jit()
-def _inner(x,i,y,j):
-    xBool = (x==i)+0
-    yBool = (y==j)+0
-    ans = (xBool &yBool).sum()
-    return ans   
-
-
-@numba.jit(nopython=True,parallel=True)
-def _contingency_table_vec(x,y,table,k=None):
-
-    #assert k != None, 'k should not be None'
-    #x,y = check_pairwise_arrays(x,y) 
-
-    for i in range(k):
-        for j in range(k):
-            table[i,j]=_inner(x,i,y,j)
-    return table
 
 def contingency_table_vec(x,y,k=None):
 
