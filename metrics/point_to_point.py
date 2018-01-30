@@ -156,6 +156,14 @@ def unknow_vec(x,y):
 
 def contingency_table_vec(x,y,k=None):
 
+    '''
+    performance:
+    >>> timeit contingency_table_vec(np.arange(1000),np.arange(1000),1000)
+    1 loop, best of 3: 1.61 s per loop
+    >>> timeit contingency_table_vec(np.arange(2000),np.arange(2000),2000)
+    1 loop, best of 3: 9.99 s per loop
+
+    '''
     assert k != None, 'k should not be None'
     x,y = check_pairwise_arrays(x,y)   
     @numba.jit(nopython=True)
