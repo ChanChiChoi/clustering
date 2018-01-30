@@ -6,11 +6,15 @@ import numba
 from .utils import check_pairwise_arrays
 
 @numba.jit()
-def weighted_lp_DM_vec(x,y,weights=None,p=1):
+def weighted_lp_vec(x,y,weights=None,p=1):
     '''
+    this is a "Dissimilarity Measure"
     parameters:
     x - a vector
     y - a vector
+
+    refences:
+    "The weighted lp metric DMs" from p604, chapter 11.2.2
     '''
 
     assert p>0, 'p must bigger than 0'
@@ -27,10 +31,12 @@ def weighted_lp_DM_vec(x,y,weights=None,p=1):
     distanceWP = np.power(sumWAbsVec,1.0/p)
     return distanceWP
 
+  
 
-def lp_DM_mat(X,Y,p=1):
+def lp_mat(X,Y,p=1):
 
     '''
+    this is a "Dissimilarity Measure"
     lp_DM_mat(X,Y,1) is equal :
     >>> from sklearn.metrics.pairwise import manhattan_distances
     >>> manhattan_distances(X,Y,sum_over_features=True))
@@ -54,8 +60,9 @@ def lp_DM_mat(X,Y,p=1):
 
     return distanceP
 
-def dG_DM_vec(x,y,maxVec,minVec):
+def dG_vec(x,y,maxVec,minVec):
     '''
+    this is a "Dissimilarity Measure"
     parameters:
     x - a vector
     y - a vector
@@ -72,7 +79,10 @@ def dG_DM_vec(x,y,maxVec,minVec):
 
     return ans
 
-def dQ_DM_vec(x,y):
+def dQ_vec(x,y):
+    '''
+    this is a "Dissimilarity Measure"
+    '''
     x,y = check_pairwise_arrays(x,y)
     l = x.shape[-1]
     diffVec = x-y
@@ -81,6 +91,109 @@ def dQ_DM_vec(x,y):
     ans = np.sqrt(tmp1)
 
     return ans
+
+def inner_vec(x,y):
+    '''
+    this is a "Similarity Measure"
+    '''
+    x,y = check_pairwise_arrays(x,y)
+    ans = np.inner(x,y).squeeze()
+    return ans
+
+def cosine_vec(x,y):
+    '''
+    this is a "Similarity Measure"
+    '''
+    x,y = check_pairwise_arrays(x,y)
+    numerator = np.inner(x,y).squeeze()
+    denominator = np.sqrt(np.dot(x,x.T))*np.sqrt(np.dot(y,y.T))
+    denominator = denominator.squeeze() 
+    return numerator/denominator
+
+def pearson_vec(x,y):
+    '''
+    this is a "Similarity Measure"
+    '''
+    x,y = check_pairwise_arrays(x,y)
+    x, y = x-np.mean(x), y-np.mean(y)
+    return cosine_vec(x,y)
+
+def pearson_like_vec(x,y):
+    '''
+    this is a "Dissimilarity Measure"
+    '''
+    x,y = check_pairwise_arrays(x,y)
+    ans = (1-pearson_SM_vec(x,y))/2
+    return ans
+
+def tanimoto_vec(x,y):
+    '''
+    this is a "Similarity Measure"
+    '''
+    '''
+    x,y = check_pairwise_arrays(x,y)
+    numerator = np.inner(x,y).squeeze()
+    denominator = np.dot(x,x.T)+np.dot(y,y)-numerator
+    denominator = denominator.squeeze()
+    '''
+    x,y = check_pairwise_arrays(x,y)
+    numerator = 1
+    diffVec = x-y
+    denominator = 1 + np.dot(diffVec, diffVec.T)/np.dot(x, y.T)
+    ans = numerator/denominator
+    return ans
+
+def unknow_vec(x,y):
+    '''
+    this is a "Similarity Measure"
+    '''
+    x,y = check_pairwise_arrays(x,y)
+    xyLengthSum = np.dot(x,x.T)+np.dot(y,y.T)
+    ans = 1 - weighted_lp_vec(x,y,weights=None,p=2)/xyLengthSum
+    return ans
+
+#=========belows are Discrete-Valued Vectors
+@numba.jit()
+def _inner(x,i,y,j):
+    xBool = (x==i)+0
+    yBool = (y==j)+0
+    ans = (xBool &yBool).sum()
+    return ans   
+
+
+@numba.jit(nopython=True,parallel=True)
+def _contingency_table_vec(x,y,table,k=None):
+
+    #assert k != None, 'k should not be None'
+    #x,y = check_pairwise_arrays(x,y) 
+
+    for i in range(k):
+        for j in range(k):
+            table[i,j]=_inner(x,i,y,j)
+    return table
+
+def contingency_table_vec(x,y,k=None):
+
+    assert k != None, 'k should not be None'
+    x,y = check_pairwise_arrays(x,y)   
+    @numba.jit(nopython=True)
+    def _inner(x,i,y,j):
+        xBool = (x==i)
+        yBool = (y==j)
+        ans = (xBool &yBool).sum()
+        return ans
+        #return ((x==i)&(y==j)).sum() # the sentence maybe faster
+
+    @numba.jit(nopython=True,parallel=True)
+    def _contingency_table_vec(x,y,table,k=None):
+        for i in range(k):
+            for j in range(k):
+                table[i,j]=_inner(x,i,y,j)
+        return table    
+
+    table = np.zeros([k,k])
+    table = _contingency_table_vec(x,y,table,k)
+    return table
 
 
 if __name__ == '__main__':
