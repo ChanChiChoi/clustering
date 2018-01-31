@@ -230,7 +230,7 @@ def gowe_mix_vec(x,y,binVarInds=[],nomOrOrdVarInds=[],intOrRatVarInds=[],r=[]):
     >>> gowe_mix_vec(x1,x2,binVarInds,nomOrOrdVarInds,intOrRatVarInds,r)
     0.6824
     '''
-    #x,y = check_pairwise_arrays(x,y)
+    x,y = check_pairwise_arrays(x,y)
     x,y = x.squeeze(), y.squeeze()
     l = x.shape[0]
     assert len(binVarInds)+len(nomOrOrdVarInds)+len(intOrRatVarInds) == l,\
