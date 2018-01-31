@@ -212,7 +212,7 @@ def tanimoto_vec(x,y):
     return numerator/denominator
 
 # ==== Mixed Valued Vectors
-def gowe_mix_vec(x,y,binVarInds=None):
+def gowe_mix_vec(x,y,binVarInds=[],nomOrOrdVarInds=[],intOrRatVarInds=[],r=[]):
     '''
     parameters
     ----------
@@ -224,23 +224,40 @@ def gowe_mix_vec(x,y,binVarInds=None):
     >>> 
 
     '''
-    
-    assert b, 'binary variable should not be None'
     x,y = check_pairwise_arrays(x,y)
-    w = np.ones_like(x).squeeze()
+    x,y = x.squeeze(), y.squeeze()
+    l = x.shape[0]
+    assert len(binVarInds)+len(nomOrOrdVarInds)+len(intOrRatVarInds) == l,\
+        '''the binVarInds,nomOrOrdVarInds,intOrRatVarInds length 
+           not equal x feature dimension length'''
+    assert len(intOrRatVarInds) == len(r),'the intOrRatVarInds length not equal r'
+    #process the wieights 
+    weights = np.ones_like(x)
     binVarInds = np.array(binVarInds)
     xNoneFlag = x == None
     yNoneFlag = y == None
-    NoneDim = xNoneFlag|yNoneFlag
-    w[NoneDim] = 0
-    w[binVarInds] = 0
-    denominator = w.sum()
-    if denominator == 0: return None
-    s = np.zeros_like(x).squeeze()
-    bDimTrue = x[binVarInds] & y[binVarInds]
-    s[binVarInds] = bDimTrue
-    
+    NoneDim = xNoneFlag | yNoneFlag
+    weights[NoneDim] = 0
+    weights[binVarInds] = 0
+    denominator = weights.sum()
 
+    if denominator == 0: return None
+    #1 - process the binary variable dimension
+    s = np.zeros_like(x)
+    if not binVarInds:  
+        bDimTrue = x[binVarInds] & y[binVarInds]
+        s[binVarInds] = bDimTrue
+    #2 - process the nominal or ordinal variables
+    if not nomOrOrdVarInds:
+        noDimTrue = x == y
+        s[nomOrOrdVarInds] = noDimTrue[nomOrOrdVarInds]
+    #3 - process the interval or ratio scaled variables
+    if not intOrRatVarInds:
+        r = np.asarray(r)
+        s[intOrRatVarInds] = 1-np.abs(x[intOrRatVarInds]-y[intOrRatVarInds])/r
+    numerator = s.sum()
+    ans = numerator/denominator
+    return ans
 
 if __name__ == '__main__':
     pass
