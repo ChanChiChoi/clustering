@@ -185,6 +185,62 @@ def contingency_table_vec(x,y,k=None):
     table = _contingency_table_vec(x,y,table,k)
     return table
 
+def hamming_distance_vec(x,y):
+    '''
+    this is a "Dissimilarity Measure"
+    '''
+    x,y = check_pairwise_arrays(x,y)  
+    k = np.max(np.max(x),np.max(y))
+    table = contingency_table_vec(x,y,k)
+    DH = table.sum() - (table*np.eye(k)).sum()
+    return DH
+
+def tanimoto_vec(x,y):
+    '''
+    this is a "Similarity Measure"
+    '''
+    x,y = check_pairwise_arrays(x,y)
+    k = np.max(np.max(x),np.max(y))
+    table = contingency_table_vec(x,y,k) 
+    numerator = (table*np.eye(k)).sum()
+    tableSum = table.sum()
+    row0Sum = table[0,:].sum()
+    col0Sum = table[:,0].sum()
+    nx = tableSum - row0Sum
+    ny = tableSum - col0Sum
+    denominator = nx + ny - (tableSum-row0Sum-col0Sum+table[0,0])
+    return numerator/denominator
+
+# ==== Mixed Valued Vectors
+def gowe_mix_vec(x,y,binVarInds=None):
+    '''
+    parameters
+    ----------
+    b : should be a list, each element is the index of feature dimension that
+    is a binary variable.
+
+    example
+    -------
+    >>> 
+
+    '''
+    
+    assert b, 'binary variable should not be None'
+    x,y = check_pairwise_arrays(x,y)
+    w = np.ones_like(x).squeeze()
+    binVarInds = np.array(binVarInds)
+    xNoneFlag = x == None
+    yNoneFlag = y == None
+    NoneDim = xNoneFlag|yNoneFlag
+    w[NoneDim] = 0
+    w[binVarInds] = 0
+    denominator = w.sum()
+    if denominator == 0: return None
+    s = np.zeros_like(x).squeeze()
+    bDimTrue = x[binVarInds] & y[binVarInds]
+    s[binVarInds] = bDimTrue
+    
+
 
 if __name__ == '__main__':
     pass
