@@ -221,10 +221,16 @@ def gowe_mix_vec(x,y,binVarInds=[],nomOrOrdVarInds=[],intOrRatVarInds=[],r=[]):
 
     example
     -------
-    >>> 
-
+    >>> x1 = np.array([1.2,1.5,1.9,0,1])
+    >>> x2 = np.array([0.3,0.4,0.6,0,0])
+    >>> intOrRatVarInds = [0,1,2]
+    >>> r = [9.7,12.6,14.4]
+    >>> binVarInds=[3]
+    >>> nomOrOrdVarInds = [4]
+    >>> gowe_mix_vec(x1,x2,binVarInds,nomOrOrdVarInds,intOrRatVarInds,r)
+    0.6824
     '''
-    x,y = check_pairwise_arrays(x,y)
+    #x,y = check_pairwise_arrays(x,y)
     x,y = x.squeeze(), y.squeeze()
     l = x.shape[0]
     assert len(binVarInds)+len(nomOrOrdVarInds)+len(intOrRatVarInds) == l,\
@@ -244,15 +250,15 @@ def gowe_mix_vec(x,y,binVarInds=[],nomOrOrdVarInds=[],intOrRatVarInds=[],r=[]):
     if denominator == 0: return None
     #1 - process the binary variable dimension
     s = np.zeros_like(x)
-    if not binVarInds:  
-        bDimTrue = x[binVarInds] & y[binVarInds]
+    if binVarInds != []:  
+        bDimTrue = (x[binVarInds]==1) & (y[binVarInds]==1)
         s[binVarInds] = bDimTrue
     #2 - process the nominal or ordinal variables
-    if not nomOrOrdVarInds:
+    if nomOrOrdVarInds != []:
         noDimTrue = x == y
         s[nomOrOrdVarInds] = noDimTrue[nomOrOrdVarInds]
     #3 - process the interval or ratio scaled variables
-    if not intOrRatVarInds:
+    if intOrRatVarInds != []:
         r = np.asarray(r)
         s[intOrRatVarInds] = 1-np.abs(x[intOrRatVarInds]-y[intOrRatVarInds])/r
     numerator = s.sum()
